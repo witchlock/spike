@@ -1,4 +1,4 @@
-package hello.controller;
+package database.controller;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

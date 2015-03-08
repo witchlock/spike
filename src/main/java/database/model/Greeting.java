@@ -1,4 +1,4 @@
-package hello.model;
+package database.model;
 
 public class Greeting {
 

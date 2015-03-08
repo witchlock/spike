@@ -1,6 +1,7 @@
 package hello.controller
 
-import hello.model.Store
+import database.controller.IndexController
+import database.model.Store
 import org.scalatest.FlatSpec
 
 /**
@@ -26,7 +27,7 @@ class IndexControllerTest extends FlatSpec {
     assert(jsonObject.getData.get(0).get("name") == "jack")
     assert(jsonObject.getData.get(0).get("age").asInstanceOf[Integer] == 18)
 
-    assert(jsonObject.getData.get(0).get("id").asInstanceOf[Long] == 0)
+    assert(jsonObject.getData.get(0).get("id").asInstanceOf[Integer] == 0)
     assert(jsonObject.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
 
     val json2 = "{\"name\": \"book\", \"data\": [{\"name\":\"hello\", \"price\":21}]}"
@@ -36,7 +37,7 @@ class IndexControllerTest extends FlatSpec {
     assert(jsonObject2.getData.get(0).get("name") == "hello")
     assert(jsonObject2.getData.get(0).get("price").asInstanceOf[Integer] == 21)
 
-    assert(jsonObject2.getData.get(0).get("id").asInstanceOf[Long] == 0)
+    assert(jsonObject2.getData.get(0).get("id").asInstanceOf[Integer] == 0)
     assert(jsonObject2.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
   }
 

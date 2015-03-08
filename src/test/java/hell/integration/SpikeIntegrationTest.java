@@ -4,8 +4,8 @@ package hell.integration;
  * Created by xiachen on 3/6/15.
  */
 
-import hello.Application;
-import hello.controller.GreetingController;
+import database.Application;
+import database.controller.GreetingController;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

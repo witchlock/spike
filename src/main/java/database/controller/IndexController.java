@@ -1,9 +1,9 @@
-package hello.controller;
+package database.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import hello.model.DataBase;
-import hello.model.Store;
+import database.model.DataBase;
+import database.model.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +25,7 @@ public class IndexController {
     public String create(@RequestParam(value = "json", defaultValue = "") String json){
         try {
             DataBase dataBase = objectMapper.readValue(json, DataBase.class);
-            Store.create(dataBase);
+            dataBase = Store.create(dataBase);
             return objectWriter.writeValueAsString(dataBase);
         } catch (IOException e) {
             logger.debug(e.getMessage());

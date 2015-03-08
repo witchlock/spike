@@ -1,4 +1,4 @@
-package hello.model;
+package database.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +27,8 @@ public class DataBase {
                 this.create(ud);
                 continue;
             }
+            ud.put("updated_at", System.currentTimeMillis());
+            ud.put("created_at", data.get((Integer) dataId).get("created_at"));
             data.set((Integer) dataId, ud);
         }
     }
@@ -57,5 +59,13 @@ public class DataBase {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void initiateData() {
+        int i = 0;
+        for (Map<String, Object> ud : data) {
+            ud.put("id", i++);
+            ud.put("created_at", System.currentTimeMillis());
+        }
     }
 }

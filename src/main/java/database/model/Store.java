@@ -1,4 +1,4 @@
-package hello.model;
+package database.model;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,24 +22,26 @@ public class Store {
         return false;
     }
 
-    public static void update(DataBase dataBase) {
+    public static DataBase update(DataBase dataBase) {
         Integer dataBaseId = tableName.get(dataBase.getName());
         DataBase needUpdate = stores.get(dataBaseId);
         needUpdate.update(dataBase.getData());
         stores.set(dataBaseId, needUpdate);
+        return needUpdate;
     }
 
-    public static void create(DataBase dataBase) {
+    public static DataBase create(DataBase dataBase) {
         String dataBaseName = dataBase.getName();
         if (tableName.get(dataBaseName) != null) {
-            update(dataBase);
-            return;
+            return update(dataBase);
         }
 
         Integer dataBaseId = stores.size();
-        dataBase.setId(dataBaseId);
         tableName.put(dataBaseName, dataBaseId);
+        dataBase.setId(dataBaseId);
+        dataBase.initiateData();
         stores.add(dataBase);
+        return dataBase;
     }
 
     public static DataBase pop() {
