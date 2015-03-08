@@ -1,5 +1,13 @@
 package database.model;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -7,16 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by xiachen on 3/6/15.
  */
 public class Store {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private static final TypeReference<HashMap<String,Object>> typeRef
+            = new TypeReference<HashMap<String,Object>>() {};
+
     public static List<DataBase> stores = Collections.synchronizedList(new ArrayList<>());
     public static Map<String, Integer> tableName = new ConcurrentHashMap<>();
+
+    private final Logger logger = LoggerFactory.getLogger("Store");
 
     public boolean delete() {
         return false;
     }
 
-    public boolean put() {
-        return false;
-    }
 
     public boolean get() {
         return false;
@@ -42,6 +54,22 @@ public class Store {
         dataBase.initiateData();
         stores.add(dataBase);
         return dataBase;
+    }
+
+    public static boolean put(Integer dataBaseId, String jsonObject) throws IOException {
+        DataBase dataBase = Store.stores.get(dataBaseId);
+        dataBase.create(objectMapper.readValue(jsonObject, typeRef));
+        return false;
+    }
+
+    public static String get(Integer dataBaseId, String dataId) throws IOException {
+        DataBase dataBase = Store.stores.get(dataBaseId);
+        Map<String, Object> objectMap = dataBase.getData().get(Integer.parseInt(dataId));
+        return objectWriter.writeValueAsString(objectMap);
+    }
+
+    public static String get(Integer dataBaseId) throws IOException {
+        return objectWriter.writeValueAsString(Store.stores.get(dataBaseId).getData());
     }
 
     public static DataBase pop() {

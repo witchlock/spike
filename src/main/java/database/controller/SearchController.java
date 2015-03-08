@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class SearchController {
-
     @RequestMapping("/search")
     public String search(@RequestParam(value="key", defaultValue = "World") String key) {
         return key;

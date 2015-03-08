@@ -6,26 +6,76 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import database.fetcher.RequestFetcher;
 import database.model.DataBase;
 import database.model.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * Created by xiachen on 3/8/15.
  */
 @RestController
 public class DataController {
-
     public static final String CAN_T_RECOGNIZE_THIS_DATA_SOURCE = "Can't Recognize this data source: ";
     public static final int ALL_DATA_IN_DATABASE = 3;
     public static final int SINGLE_ELEMENT = 4;
-    private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private final Logger logger = LoggerFactory.getLogger("DataController");
 
-    @RequestMapping("/data/*/*")
-    public String data() throws JsonProcessingException {
+    @RequestMapping(value = "/data/*/*", method = RequestMethod.GET)
+    public String get() throws JsonProcessingException {
         String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
         return getSingleElement(urlPath);
+    }
+
+    @RequestMapping(value = "/data/*", method = RequestMethod.GET)
+    public String getAll() throws JsonProcessingException {
+        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+        String[] data = urlPath.split("\\/");
+        if (data.length != ALL_DATA_IN_DATABASE) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataBaseName = data[2];
+
+        Integer dataBaseId = Store.tableName.get(dataBaseName);
+        if (dataBaseId == null) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+
+        try {
+            return Store.get(dataBaseId);
+        } catch (IOException e) {
+            return "Get DataBase: " + dataBaseName + " Failed: " + e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/data/*/", method = RequestMethod.POST)
+    public String put(@RequestParam(value = "data", defaultValue = "") String data){
+        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+        return putSingleElement(urlPath, data);
+    }
+
+    private String putSingleElement(String urlPath, String jsonData){
+        String[] data = urlPath.split("\\/");
+        if (data.length != ALL_DATA_IN_DATABASE) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataBaseName = data[2];
+
+        Integer dataBaseId = Store.tableName.get(dataBaseName);
+        if (dataBaseId == null) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        try {
+            Store.put(dataBaseId, jsonData);
+        } catch (IOException e) {
+            logger.error(e.getLocalizedMessage());
+            return "PUT Failed: " + e.getMessage();
+        }
+        return "OK";
     }
 
     private String getSingleElement(String urlPath) throws JsonProcessingException {
@@ -42,27 +92,9 @@ public class DataController {
         DataBase dataBase = Store.stores.get(dataBaseId);
         String dataId = data[3];
         try {
-            Map<String, Object> objectMap = dataBase.getData().get(Integer.parseInt(dataId));
-            return objectWriter.writeValueAsString(objectMap);
+            return Store.get(dataBaseId, dataId);
         } catch (Exception e) {
             return "Can't find Id=" + dataId + " in " + dataBaseName;
         }
-    }
-
-    @RequestMapping("/data/*")
-    public String getAll() throws JsonProcessingException {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
-        String[] data = urlPath.split("\\/");
-        System.out.println();
-        if (data.length != ALL_DATA_IN_DATABASE) {
-            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
-        }
-        String dataBaseName = data[2];
-
-        Integer dataBaseId = Store.tableName.get(dataBaseName);
-        if (dataBaseId == null) {
-            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
-        }
-        return objectWriter.writeValueAsString(Store.stores.get(dataBaseId).getData());
     }
 }

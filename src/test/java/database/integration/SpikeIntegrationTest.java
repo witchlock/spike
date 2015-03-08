@@ -1,4 +1,4 @@
-package hell.integration;
+package database.integration;
 
 /**
  * Created by xiachen on 3/6/15.
