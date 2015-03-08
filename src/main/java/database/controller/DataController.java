@@ -89,7 +89,6 @@ public class DataController {
         if (dataBaseId == null) {
             return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
         }
-        DataBase dataBase = Store.stores.get(dataBaseId);
         String dataId = data[3];
         try {
             return Store.get(dataBaseId, dataId);
