@@ -1,17 +1,11 @@
 package database.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import database.fetcher.RequestFetcher;
-import database.model.DataBase;
 import database.model.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -37,6 +31,11 @@ public class DataController {
         return deleteSingleElement(urlPath);
     }
 
+    @RequestMapping(value = "/data/*/*", method = RequestMethod.POST)
+    public String put(@RequestParam(value = "data", defaultValue = "") String data) throws JsonProcessingException {
+        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+        return putSingleElement(urlPath, data);
+    }
 
     @RequestMapping(value = "/data/*", method = RequestMethod.GET)
     public String getAll() throws JsonProcessingException {
@@ -60,12 +59,12 @@ public class DataController {
     }
 
     @RequestMapping(value = "/data/*/", method = RequestMethod.POST)
-    public String put(@RequestParam(value = "data", defaultValue = "") String data) {
+    public String post(@RequestParam(value = "data", defaultValue = "") String data) {
         String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
-        return putSingleElement(urlPath, data);
+        return postSingleElement(urlPath, data);
     }
 
-    private String putSingleElement(String urlPath, String jsonData) {
+    private String postSingleElement(String urlPath, String jsonData) {
         String[] data = urlPath.split("\\/");
         if (data.length != ALL_DATA_IN_DATABASE) {
             return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
@@ -77,7 +76,7 @@ public class DataController {
             return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
         }
         try {
-            Store.put(dataBaseId, jsonData);
+            Store.post(dataBaseId, jsonData);
         } catch (IOException e) {
             logger.error(e.getLocalizedMessage());
             return "PUT Failed: " + e.getMessage();
@@ -120,6 +119,27 @@ public class DataController {
             Store.delete(dataBaseId, Integer.parseInt(dataId));
         } catch (Exception e) {
             return "DELETE Failed: " + e.getMessage();
+        }
+        return "OK";
+    }
+
+    private String putSingleElement(String urlPath, String jsonData) {
+        String[] data = urlPath.split("\\/");
+        if (data.length != SINGLE_ELEMENT) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataBaseName = data[2];
+
+        Integer dataBaseId = Store.tableName.get(dataBaseName);
+        if (dataBaseId == null) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataId = data[3];
+        try {
+            Store.put(dataBaseId, Integer.parseInt(dataId), jsonData);
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage());
+            return "PUT Failed: " + e.getMessage();
         }
         return "OK";
     }

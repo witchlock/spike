@@ -33,6 +33,14 @@ public class DataBase {
         }
     }
 
+    public void put(Integer dataId, Map<String, Object> updateData) {
+        Map<String, Object> ed = data.get(dataId);
+        updateData.put("id", dataId);
+        updateData.put("created_at", ed.get("created_at"));
+        updateData.put("updated_at", System.currentTimeMillis());
+        data.set(dataId, updateData);
+    }
+
     public Map<String, Object> pop() {
         return data.get(data.size() - 1);
     }

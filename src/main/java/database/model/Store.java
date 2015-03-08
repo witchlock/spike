@@ -56,7 +56,7 @@ public class Store {
         return dataBase;
     }
 
-    public static boolean put(Integer dataBaseId, String jsonObject) throws IOException {
+    public static boolean post(Integer dataBaseId, String jsonObject) throws IOException {
         DataBase dataBase = Store.stores.get(dataBaseId);
         dataBase.create(objectMapper.readValue(jsonObject, typeRef));
         return false;
@@ -84,5 +84,10 @@ public class Store {
     public static void delete(Integer dataBaseId, Integer dataId) {
         DataBase dataBase = Store.stores.get(dataBaseId);
         dataBase.delete(dataId);
+    }
+
+    public static void put(Integer dataBaseId, Integer dataId, String jsonData) throws IOException {
+        DataBase dataBase = Store.stores.get(dataBaseId);
+        dataBase.put(dataId, objectMapper.readValue(jsonData, typeRef));
     }
 }
