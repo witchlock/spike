@@ -68,4 +68,8 @@ public class DataBase {
             ud.put("created_at", System.currentTimeMillis());
         }
     }
+
+    public void delete(Integer dataId) {
+        data.set(dataId, null);
+    }
 }

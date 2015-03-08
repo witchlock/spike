@@ -80,4 +80,9 @@ public class Store {
         stores = Collections.synchronizedList(new ArrayList<>());
         tableName = new ConcurrentHashMap<>();
     }
+
+    public static void delete(Integer dataBaseId, Integer dataId) {
+        DataBase dataBase = Store.stores.get(dataBaseId);
+        dataBase.delete(dataId);
+    }
 }

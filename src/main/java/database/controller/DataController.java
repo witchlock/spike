@@ -31,6 +31,13 @@ public class DataController {
         return getSingleElement(urlPath);
     }
 
+    @RequestMapping(value = "/data/*/*", method = RequestMethod.DELETE)
+    public String delete() throws JsonProcessingException {
+        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+        return deleteSingleElement(urlPath);
+    }
+
+
     @RequestMapping(value = "/data/*", method = RequestMethod.GET)
     public String getAll() throws JsonProcessingException {
         String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
@@ -53,12 +60,12 @@ public class DataController {
     }
 
     @RequestMapping(value = "/data/*/", method = RequestMethod.POST)
-    public String put(@RequestParam(value = "data", defaultValue = "") String data){
+    public String put(@RequestParam(value = "data", defaultValue = "") String data) {
         String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
         return putSingleElement(urlPath, data);
     }
 
-    private String putSingleElement(String urlPath, String jsonData){
+    private String putSingleElement(String urlPath, String jsonData) {
         String[] data = urlPath.split("\\/");
         if (data.length != ALL_DATA_IN_DATABASE) {
             return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
@@ -95,5 +102,25 @@ public class DataController {
         } catch (Exception e) {
             return "Can't find Id=" + dataId + " in " + dataBaseName;
         }
+    }
+
+    private String deleteSingleElement(String urlPath) {
+        String[] data = urlPath.split("\\/");
+        if (data.length != SINGLE_ELEMENT) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataBaseName = data[2];
+
+        Integer dataBaseId = Store.tableName.get(dataBaseName);
+        if (dataBaseId == null) {
+            return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
+        }
+        String dataId = data[3];
+        try {
+            Store.delete(dataBaseId, Integer.parseInt(dataId));
+        } catch (Exception e) {
+            return "DELETE Failed: " + e.getMessage();
+        }
+        return "OK";
     }
 }

@@ -33,7 +33,7 @@ class IndexControllerTest extends FlatSpec {
     indexController.create(json2)
     val jsonObject2 = Store.pop()
     assert(jsonObject2.getName == "book")
-    assert(jsonObject2.getData.get(0).get("name") == "database")
+    assert(jsonObject2.getData.get(0).get("name") == "hello")
     assert(jsonObject2.getData.get(0).get("price").asInstanceOf[Integer] == 21)
 
     assert(jsonObject2.getData.get(0).get("id").asInstanceOf[Integer] == 0)
