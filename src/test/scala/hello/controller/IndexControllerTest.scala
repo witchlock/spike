@@ -6,23 +6,70 @@ import org.scalatest.FlatSpec
 /**
  * Created by xiachen on 3/8/15.
  */
-class IndexControllerTest extends FlatSpec{
+class IndexControllerTest extends FlatSpec {
   val indexController = new IndexController
 
   "Index Controller " should "parse a json string exactly" in {
-    val json = "{\"name\":\"jack\", \"age\":18}"
+    Store.clear()
+    val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
 
-    assert(indexController.index(json) == "OK")
+    assert(indexController.index(json1) == "OK")
+  }
+
+  "Index Controller " should "create a database by a json" in {
+    Store.clear()
+    val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
+    indexController.index(json1)
+
     val jsonObject = Store.pop()
-    assert(jsonObject.get("name") == "jack")
-    assert(jsonObject.get("age") == 18)
+    assert(jsonObject.getName == "user")
+    assert(jsonObject.getData.get(0).get("name") == "jack")
+    assert(jsonObject.getData.get(0).get("age").asInstanceOf[Integer] == 18)
 
-    assert(jsonObject.get("id") == 0)
-    assert(jsonObject.get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
+    assert(jsonObject.getData.get(0).get("id").asInstanceOf[Long] == 0)
+    assert(jsonObject.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
 
-    indexController.index(json)
-    val jsonObject1 = Store.pop()
-    assert(jsonObject1.get("id") == 1)
+    val json2 = "{\"name\": \"book\", \"data\": [{\"name\":\"hello\", \"price\":21}]}"
+    indexController.index(json2)
+    val jsonObject2 = Store.pop()
+    assert(jsonObject2.getName == "book")
+    assert(jsonObject2.getData.get(0).get("name") == "hello")
+    assert(jsonObject2.getData.get(0).get("price").asInstanceOf[Integer] == 21)
+
+    assert(jsonObject2.getData.get(0).get("id").asInstanceOf[Long] == 0)
+    assert(jsonObject2.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
+  }
+
+  "Index Controller" should "update existed database by a json" in {
+    Store.clear()
+
+    val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
+    indexController.index(json1)
+
+    val json2 = "{\"id\":0, \"name\": \"user\", \"data\": [{\"id\": 0, \"name\":\"rose\", \"age\":32}]}"
+    indexController.index(json2)
+
+    val jsonObject = Store.pop()
+    assert(Store.stores.size() == 1)
+    assert(jsonObject.getName == "user")
+    assert(jsonObject.getData.get(0).get("name") == "rose")
+    assert(jsonObject.getData.get(0).get("age").asInstanceOf[Integer] == 32)
+
+    assert(jsonObject.getData.get(0).get("id").asInstanceOf[Integer] == 0)
+    assert(jsonObject.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
+  }
+
+  "Index Controller" should "add existed database by a json without id" in {
+    Store.clear()
+
+    val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
+    indexController.index(json1)
+
+    val json2 = "{\"id\":0, \"name\": \"user\", \"data\": [{\"name\":\"rose\", \"age\":32}]}"
+    indexController.index(json2)
+
+    assert(Store.stores.size() == 1)
+    assert(Store.stores.get(0).getData.size() == 2)
   }
 
   "Index Controller " should "parse a no json string failed" in {

@@ -1,8 +1,8 @@
 package hello.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Store {
     private final static AtomicLong id = new AtomicLong();
 
-    public static List<Map<String, Object>> stores = new ArrayList<>();
+    public static List<DataBase> stores = Collections.synchronizedList(new ArrayList<>());
 
     public boolean delete() {
         return false;
@@ -24,13 +24,28 @@ public class Store {
     public boolean get() {
         return false;
     }
-    public static void create(Map<String, Object> objectMap) {
-        objectMap.put("id", id.getAndIncrement());
-        objectMap.put("created_at", System.currentTimeMillis());
-        stores.add(objectMap);
+
+    public static void update(DataBase dataBase) {
+        int dataBaseId = (int) dataBase.getId();
+        DataBase needUpdate = stores.get(dataBaseId);
+        needUpdate.update(dataBase.getData());
+        stores.set(dataBaseId, needUpdate);
     }
 
-    public static Map<String, Object> pop() {
+    public static void create(DataBase databBase) {
+        if (databBase.getId() != -1) {
+            update(databBase);
+            return;
+        }
+        databBase.setId(stores.size());
+        stores.add(databBase);
+    }
+
+    public static DataBase pop() {
         return stores.get(stores.size() - 1);
+    }
+
+    public static void clear() {
+        stores = Collections.synchronizedList(new ArrayList<>());
     }
 }
