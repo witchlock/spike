@@ -1,17 +1,14 @@
 package hello.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by xiachen on 3/6/15.
  */
 public class Store {
-    private final static AtomicLong id = new AtomicLong();
-
     public static List<DataBase> stores = Collections.synchronizedList(new ArrayList<>());
+    public static Map<String, Integer> tableName = new ConcurrentHashMap<>();
 
     public boolean delete() {
         return false;
@@ -26,19 +23,23 @@ public class Store {
     }
 
     public static void update(DataBase dataBase) {
-        int dataBaseId = (int) dataBase.getId();
+        Integer dataBaseId = tableName.get(dataBase.getName());
         DataBase needUpdate = stores.get(dataBaseId);
         needUpdate.update(dataBase.getData());
         stores.set(dataBaseId, needUpdate);
     }
 
-    public static void create(DataBase databBase) {
-        if (databBase.getId() != -1) {
-            update(databBase);
+    public static void create(DataBase dataBase) {
+        String dataBaseName = dataBase.getName();
+        if (tableName.get(dataBaseName) != null) {
+            update(dataBase);
             return;
         }
-        databBase.setId(stores.size());
-        stores.add(databBase);
+
+        Integer dataBaseId = stores.size();
+        dataBase.setId(dataBaseId);
+        tableName.put(dataBaseName, dataBaseId);
+        stores.add(dataBase);
     }
 
     public static DataBase pop() {
@@ -47,5 +48,6 @@ public class Store {
 
     public static void clear() {
         stores = Collections.synchronizedList(new ArrayList<>());
+        tableName = new ConcurrentHashMap<>();
     }
 }

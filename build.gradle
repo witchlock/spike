@@ -23,7 +23,10 @@ repositories {
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile('org.springframework.boot:spring-boot-starter-web'){
+        exclude module: 'org.springframework.boot:spring-boot-starter-logging'
+        exclude module: "logback-classic"
+    }
     compile 'org.scala-lang:scala-library:2.11.3'
     compile 'org.codehaus.jackson:jackson-core-asl:1.1.0'
     compile 'org.slf4j:slf4j-simple:1.7.7'

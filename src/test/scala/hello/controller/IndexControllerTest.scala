@@ -13,13 +13,13 @@ class IndexControllerTest extends FlatSpec {
     Store.clear()
     val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
 
-    assert(indexController.index(json1) == "OK")
+    assert(!indexController.create(json1).contains("JSON Parsed Failed: "))
   }
 
   "Index Controller " should "create a database by a json" in {
     Store.clear()
     val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
-    indexController.index(json1)
+    indexController.create(json1)
 
     val jsonObject = Store.pop()
     assert(jsonObject.getName == "user")
@@ -30,7 +30,7 @@ class IndexControllerTest extends FlatSpec {
     assert(jsonObject.getData.get(0).get("created_at").asInstanceOf[Long] <= System.currentTimeMillis())
 
     val json2 = "{\"name\": \"book\", \"data\": [{\"name\":\"hello\", \"price\":21}]}"
-    indexController.index(json2)
+    indexController.create(json2)
     val jsonObject2 = Store.pop()
     assert(jsonObject2.getName == "book")
     assert(jsonObject2.getData.get(0).get("name") == "hello")
@@ -44,10 +44,10 @@ class IndexControllerTest extends FlatSpec {
     Store.clear()
 
     val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
-    indexController.index(json1)
+    indexController.create(json1)
 
-    val json2 = "{\"id\":0, \"name\": \"user\", \"data\": [{\"id\": 0, \"name\":\"rose\", \"age\":32}]}"
-    indexController.index(json2)
+    val json2 = "{\"name\": \"user\", \"data\": [{\"id\": 0, \"name\":\"rose\", \"age\":32}]}"
+    indexController.create(json2)
 
     val jsonObject = Store.pop()
     assert(Store.stores.size() == 1)
@@ -63,10 +63,10 @@ class IndexControllerTest extends FlatSpec {
     Store.clear()
 
     val json1 = "{\"name\": \"user\", \"data\": [{\"name\":\"jack\", \"age\":18}]}"
-    indexController.index(json1)
+    indexController.create(json1)
 
     val json2 = "{\"id\":0, \"name\": \"user\", \"data\": [{\"name\":\"rose\", \"age\":32}]}"
-    indexController.index(json2)
+    indexController.create(json2)
 
     assert(Store.stores.size() == 1)
     assert(Store.stores.get(0).getData.size() == 2)
@@ -74,9 +74,9 @@ class IndexControllerTest extends FlatSpec {
 
   "Index Controller " should "parse a no json string failed" in {
     val json1 = "Hello World"
-    assert(indexController.index(json1) != "OK")
+    assert(indexController.create(json1).contains("JSON Parsed Failed: "))
 
     val json2 = "{'name':'jack', 'age':18}"
-    assert(indexController.index(json2) != "OK")
+    assert(indexController.create(json2).contains("JSON Parsed Failed: "))
   }
 }
