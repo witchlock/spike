@@ -75,6 +75,7 @@ public class Store {
     }
 
     public static DataBase pop() {
+        if (stores.size() == 0) return null;
         return stores.get(stores.size() - 1);
     }
 
