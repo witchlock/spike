@@ -1,7 +1,6 @@
 package database.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import database.fetcher.RequestFetcher;
 import database.model.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,7 @@ public class DataController {
 
     @RequestMapping(value = "/data/*/", method = RequestMethod.POST)
     public String post(@RequestParam(value = "data", defaultValue = "") String data, HttpServletRequest request) {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+        String urlPath = request.getServletPath();
         return postSingleElement(urlPath, data);
     }
 
