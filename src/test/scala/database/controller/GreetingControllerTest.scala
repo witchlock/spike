@@ -1,6 +1,5 @@
 package database.controller
 
-import database.controller.GreetingController
 import org.scalatest.FlatSpec
 
 class GreetingControllerTest extends FlatSpec {

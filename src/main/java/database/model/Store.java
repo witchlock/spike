@@ -1,6 +1,5 @@
 package database.model;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -17,8 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Store {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    private static final TypeReference<HashMap<String,Object>> typeRef
+    private static final TypeReference<HashMap<String,Object>> MAPREF
             = new TypeReference<HashMap<String,Object>>() {};
+
+    private static final TypeReference<List<HashMap<String,Object>>> LISTREF
+            = new TypeReference<List<HashMap<String,Object>>>() {};
 
     public static List<DataBase> stores = Collections.synchronizedList(new ArrayList<>());
     public static Map<String, Integer> tableName = new ConcurrentHashMap<>();
@@ -58,7 +60,7 @@ public class Store {
 
     public static boolean post(Integer dataBaseId, String jsonObject) throws IOException {
         DataBase dataBase = Store.stores.get(dataBaseId);
-        dataBase.create(objectMapper.readValue(jsonObject, typeRef));
+        dataBase.create(objectMapper.readValue(jsonObject, MAPREF));
         return false;
     }
 
@@ -88,6 +90,13 @@ public class Store {
 
     public static void put(Integer dataBaseId, Integer dataId, String jsonData) throws IOException {
         DataBase dataBase = Store.stores.get(dataBaseId);
-        dataBase.put(dataId, objectMapper.readValue(jsonData, typeRef));
+        dataBase.put(dataId, objectMapper.readValue(jsonData, MAPREF));
+    }
+    public static Map<String, Object> parseMap(String jsonData) throws IOException {
+        return objectMapper.readValue(jsonData, MAPREF);
+    }
+
+    public static List<Map<String, Object>> parseList(String jsonData) throws IOException {
+        return objectMapper.readValue(jsonData, LISTREF);
     }
 }

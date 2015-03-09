@@ -34,7 +34,7 @@ dependencies {
     testCompile 'junit:junit'
     testCompile 'org.springframework:spring-test'
     testCompile 'org.scalatest:scalatest_2.11:2.2.1'
-
+    testCompile 'org.scalamock:scalamock-scalatest-support_2.11:3.2.1'
 }
 
 task wrapper(type: Wrapper) {
