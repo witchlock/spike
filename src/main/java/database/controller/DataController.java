@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -20,26 +21,26 @@ public class DataController {
     private final Logger logger = LoggerFactory.getLogger("DataController");
 
     @RequestMapping(value = "/data/*/*", method = RequestMethod.GET)
-    public String get() throws JsonProcessingException {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+    public String get(HttpServletRequest request) throws JsonProcessingException {
+        String urlPath = request.getServletPath();
         return getSingleElement(urlPath);
     }
 
     @RequestMapping(value = "/data/*/*", method = RequestMethod.DELETE)
-    public String delete() throws JsonProcessingException {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+    public String delete(HttpServletRequest request) throws JsonProcessingException {
+        String urlPath = request.getServletPath();
         return deleteSingleElement(urlPath);
     }
 
     @RequestMapping(value = "/data/*/*", method = RequestMethod.POST)
-    public String put(@RequestParam(value = "data", defaultValue = "") String data) throws JsonProcessingException {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+    public String put(@RequestParam(value = "data", defaultValue = "") String data, HttpServletRequest request) throws JsonProcessingException {
+        String urlPath = request.getServletPath();
         return putSingleElement(urlPath, data);
     }
 
     @RequestMapping(value = "/data/*", method = RequestMethod.GET)
-    public String getAll() throws JsonProcessingException {
-        String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
+    public String getAll(HttpServletRequest request) throws JsonProcessingException {
+        String urlPath = request.getServletPath();
         String[] data = urlPath.split("\\/");
         if (data.length != ALL_DATA_IN_DATABASE) {
             return CAN_T_RECOGNIZE_THIS_DATA_SOURCE + urlPath;
@@ -59,7 +60,7 @@ public class DataController {
     }
 
     @RequestMapping(value = "/data/*/", method = RequestMethod.POST)
-    public String post(@RequestParam(value = "data", defaultValue = "") String data) {
+    public String post(@RequestParam(value = "data", defaultValue = "") String data, HttpServletRequest request) {
         String urlPath = RequestFetcher.getCurrentRequest().getServletPath();
         return postSingleElement(urlPath, data);
     }
