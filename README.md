@@ -25,4 +25,6 @@ gradle test
 
   data: {"name": "jack"}
 
+## Swagger-ui Api docs:
+Visit: [http://localhost:8080/index.html](http://localhost:8080/index.html)
 
