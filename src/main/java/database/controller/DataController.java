@@ -1,10 +1,12 @@
 package database.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import database.model.Store;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import com.wordnik.swagger.annotations.Api;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.io.IOException;
  * Created by xiachen on 3/8/15.
  */
 @RestController
+@Api(value="", description="restful for a database")
 public class DataController {
     public static final String CAN_T_RECOGNIZE_THIS_DATA_SOURCE = "Can't Recognize this data source: ";
     public static final int ALL_DATA_IN_DATABASE = 3;
