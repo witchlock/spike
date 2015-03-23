@@ -15,7 +15,6 @@ apply plugin: 'scala'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
-apply plugin: 'au.com.dius.pact'
 apply plugin: 'net.researchgate.release'
 
 jar {
@@ -34,8 +33,6 @@ dependencies {
         exclude module: "logback-classic"
     }
 
-    compile('au.com.dius:pact-jvm-consumer-junit_2.11:2.1.12')
-
     compile 'com.mangofactory:swagger-springmvc:0.9.5'
     compile 'org.ajar:swagger-spring-mvc-ui:0.4'
 
@@ -48,37 +45,6 @@ dependencies {
     testCompile 'org.scalatest:scalatest_2.11:2.2.1'
     testCompile 'org.scalamock:scalamock-scalatest-support_2.11:3.2.1'
 }
-
-
-task('startTheApp') << {
-    // start up your provider here
-}
-
-// This will be called after the provider task
-task('killTheApp') << {
-    // kill your provider here
-}
-
-pact {
-
-    serviceProviders {
-
-        provider1 {
-
-            startProviderTask = startTheApp
-            terminateProviderTask = killTheApp
-
-            hasPactWith('consumer1') {
-                pactFile = file('src/test/resources/provider1-consumer1-pact.json')
-            }
-
-        }
-
-    }
-
-}
-
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
